@@ -1,23 +1,3 @@
-/* -*- C++ -*- */
-
-/****************************************************************************
-** Copyright (c) 2001-2014
-**
-** This file is part of the QuickFIX FIX Engine
-**
-** This file may be distributed under the terms of the quickfixengine.org
-** license as defined by quickfixengine.org and appearing in the file
-** LICENSE included in the packaging of this file.
-**
-** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
-** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-**
-** See http://www.quickfixengine.org/LICENSE for licensing information.
-**
-** Contact ask@quickfixengine.org if any conditions of this licensing are
-** not clear to you.
-**
-****************************************************************************/
 
 ﻿using System;
 using System.Collections.Generic;
@@ -34,14 +14,14 @@ namespace TechnicalDictionary
 {
     public partial class AddNewWord : Form
     {
-        private OleDbConnection anw_cn;
-        private OleDbCommand anw_com;
+        private OleDbConnection m_oleDbConnection;
+        private OleDbCommand m_oleDbCommand;
 
-        String English = null;
-        String Japanese = null;
-        String Kanji = null;
-        String Romanji = null;
-        String Note = null;
+        String m_english = null;
+        String m_japanese = null;
+        String m_kanji = null;
+        String m_romanji = null;
+        String m_note = null;
 
         public AddNewWord()
         {
@@ -50,57 +30,57 @@ namespace TechnicalDictionary
 
         private void AddButton_Click(object sender, EventArgs e)
         {
-            English = EnglishRichTextBox.Text;
-            Japanese = JapaneseRichTextBox.Text;
-            Kanji = KanjiRichTextBox.Text;
-            Romanji = RomanjiRichTextBox.Text;
-            Note = NoteRichTextBox.Text;   
+            m_english = EnglishRichTextBox.Text;
+            m_japanese = JapaneseRichTextBox.Text;
+            m_kanji = KanjiRichTextBox.Text;
+            m_romanji = RomanjiRichTextBox.Text;
+            m_note = NoteRichTextBox.Text;   
 
             if (string.IsNullOrWhiteSpace(EnglishRichTextBox.Text) ||
                 string.IsNullOrWhiteSpace(JapaneseRichTextBox.Text) ||
                 string.IsNullOrWhiteSpace(KanjiRichTextBox.Text) ||
                 string.IsNullOrWhiteSpace(RomanjiRichTextBox.Text))
             {
-                MessageBox.Show("Please fill full infomation! (Note field is option)");
+                MessageBox.Show("Please fill full infomation! (m_note field is option)");
             }
             else
             {
-                anw_cn = new OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0; Data Source=" + Application.StartupPath + "\\Databases\\TechnicalDatabase.accdb;");
-                anw_com = new OleDbCommand("INSERT into tableDict (English, Japanese, Kanji, Romanji, [Note]) Values(@English, @Japanese, @Kanji, @Romanji, @Note)", anw_cn);
-                anw_com.Connection = anw_cn;
-                anw_cn.Open();
+                m_oleDbConnection = new OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0; Data Source=" + Application.StartupPath + "\\Databases\\TechnicalDatabase.accdb;");
+                m_oleDbCommand = new OleDbCommand("INSERT into tableDict (m_english, m_japanese, m_kanji, m_romanji, [m_note]) Values(@m_english, @m_japanese, @m_kanji, @m_romanji, @m_note)", m_oleDbConnection);
+                m_oleDbCommand.Connection = m_oleDbConnection;
+                m_oleDbConnection.Open();
 
-                if (anw_cn.State == ConnectionState.Open)
+                if (m_oleDbConnection.State == ConnectionState.Open)
                 {
-                    anw_com.Parameters.Add("@English", OleDbType.VarChar).Value = English;
-                    anw_com.Parameters.Add("@Japanese", OleDbType.VarChar).Value = Japanese;
-                    anw_com.Parameters.Add("@Kanji", OleDbType.VarChar).Value = Kanji;
-                    anw_com.Parameters.Add("@Romanji", OleDbType.VarChar).Value = Romanji;
-                    anw_com.Parameters.Add("@Note", OleDbType.VarChar).Value = Note;
+                    m_oleDbCommand.Parameters.Add("@m_english", OleDbType.VarChar).Value = m_english;
+                    m_oleDbCommand.Parameters.Add("@m_japanese", OleDbType.VarChar).Value = m_japanese;
+                    m_oleDbCommand.Parameters.Add("@m_kanji", OleDbType.VarChar).Value = m_kanji;
+                    m_oleDbCommand.Parameters.Add("@m_romanji", OleDbType.VarChar).Value = m_romanji;
+                    m_oleDbCommand.Parameters.Add("@m_note", OleDbType.VarChar).Value = m_note;
 
                     try
                     {    
-                        anw_com.ExecuteNonQuery();
-                        anw_cn.Close();
+                        m_oleDbCommand.ExecuteNonQuery();
+                        m_oleDbConnection.Close();
                         this.Close();                 
                     }
                     catch (OleDbException ex)
                     {
                         MessageBox.Show(ex.ToString(), "SQL Excution Failed!");
-                        anw_cn.Close();
+                        m_oleDbConnection.Close();
                     }
                 }
                 else
                 {
                     MessageBox.Show(" Database Connection Failed");
-                    anw_cn.Close();
+                    m_oleDbConnection.Close();
                 }
             }
         }
 
         private void Cancelbutton_Click(object sender, EventArgs e)
         {
-            anw_com = null;
+            m_oleDbCommand = null;
             this.Close();
         }
     }
